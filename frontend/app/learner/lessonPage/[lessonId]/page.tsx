@@ -10,6 +10,7 @@ export default function LessonPage() {
   const courseId = searchParams.get("courseId");
   const lessonId = params.lessonId;
   const router = useRouter();
+  const [notFound, setNotFound] = useState(false);
 
   const [lesson, setLesson] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -26,7 +27,7 @@ export default function LessonPage() {
     }
 
     fetchLesson();
-  }, []);
+  }, [token, lessonId]);
 
   const fetchLesson = async () => {
     try {
@@ -39,13 +40,26 @@ export default function LessonPage() {
         }
       );
 
-      setLesson(res.data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+    if (
+    !res.data ||
+   (Array.isArray(res.data) && res.data.length === 0)
+   ) {
+  setNotFound(true);
+  } else {
+  setLesson(res.data);
+}
+
+  } catch (err: any) {
+    console.error(err);
+
+    if (err.response?.status === 404) {
+      setNotFound(true);
     }
-  };
+
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (loading) return <p className="p-6">Loading lesson...</p>;
 
@@ -54,7 +68,7 @@ export default function LessonPage() {
 
       {/* SIDEBAR */}
       <div className="w-64 p-6">
-        <div className="bg-[#efbab0c7] p-6 rounded-2xl shadow-sm h-130">
+        <div className="sticky top-6 bg-[#efbab0c7] p-6 rounded-2xl shadow-sm h-130">
           <h2
             className="cursor-pointer font-semibold mb-4"
             onClick={() =>
@@ -79,19 +93,25 @@ export default function LessonPage() {
       {/* MAIN */}
       <div className="flex-1 p-8">
 
-        <h1 className="text-3xl font-bold mb-4">
-          {lesson?.title}
-        </h1>
+  {notFound ? (
+    <div className="bg-white p-10 rounded-2xl shadow-sm text-center">
+      <p className="text-gray-500">No lessons available</p>
+    </div>
+  ) : (
+    <>
+      <h1 className="text-3xl font-bold mb-4">
+        {lesson?.title}
+      </h1>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
-
-          {/* CONTENT */}
-          <p className="text-gray-700 whitespace-pre-line">
-            {lesson?.content}
-          </p>
-
-        </div>
+      <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
+        <p className="text-gray-700 whitespace-pre-line break-all">
+          {lesson?.content}
+        </p>
       </div>
+    </>
+  )}
+
+</div>
     </div>
   );
 }

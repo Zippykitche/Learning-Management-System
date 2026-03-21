@@ -32,7 +32,7 @@ export default function CourseDetail() {
       const config = { headers: { Authorization: `Bearer ${token}` } };
 
       const courseRes = await axios.get(`http://localhost:5000/courses/${id}`, config).catch(e => { throw new Error(`Course fetch failed: ${e.response?.data?.message || e.message}`) });
-      const lessonsRes = await axios.get(`http://localhost:5000/lessons/${id}`, config).catch(e => { throw new Error(`Lessons fetch failed: ${e.response?.data?.message || e.message}`) });
+      const lessonsRes = await axios.get(`http://localhost:5000/lessons/courses/${id}/lessons`, config).catch(e => { throw new Error(`Lessons fetch failed: ${e.response?.data?.message || e.message}`) });
       const progressRes = await axios.get(`http://localhost:5000/progress/${id}`, config).catch(e => { throw new Error(`Progress fetch failed: ${e.response?.data?.message || e.message}`) });
 
       setCourse(courseRes.data);
@@ -40,7 +40,6 @@ export default function CourseDetail() {
       setProgress(progressRes.data);
 
     } catch (err: any) {
-      console.error("FETCH DATA ERROR:", err.message);
     }
   };
 
@@ -115,13 +114,13 @@ export default function CourseDetail() {
   <div className="min-h-screen bg-gray-100 flex">
 
     {/* SIDEBAR  */}
-    <div className="w-40 bg-[#d6a89c] text-black p-4 rounded-2xl ml-6 mt-6 h-130">
+    <div className="sticky top-6 bg-[#efbab0c7] p-6 rounded-2xl shadow-sm h-130">
 
       <h2
         className="mb-6 font-semibold cursor-pointer"
         onClick={() => router.push("/learner/learnerDashboard")}
       >
-        Dashboard
+        ← Back to Dashboard
       </h2>
 
       <button onClick={handleLogout} className="mt-6 underline">
@@ -146,6 +145,7 @@ export default function CourseDetail() {
         <div className="flex gap-2 mb-6">
   {lessons.map((lesson: any, index: number) => {
     const lessonId = lesson._id?.toString();
+    console.log("LESSON CLICK ID:", lessonId);
 
     const isDone =
       progress?.completedLessons

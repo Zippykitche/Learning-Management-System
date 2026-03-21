@@ -26,9 +26,15 @@ export default function LearnerDashboard() {
   const [user, setUser] = useState<any>(null);
   const [token, setToken] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "completed" | "pending">("all");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const categories = [
+  "all",
+  ...Array.from(new Set(courses.map((c) => c.category?.toLowerCase())))
+];
 
   useEffect(() => {
     setToken(localStorage.getItem("token"));
@@ -97,6 +103,13 @@ export default function LearnerDashboard() {
     .filter((c) =>
       c.title.toLowerCase().includes(search.toLowerCase())
     )
+     .filter((c) => {
+    // CATEGORY FILTER
+    if (selectedCategory !== "all") {
+      return c.category?.toLowerCase() === selectedCategory;
+    }
+    return true;
+  })
     .filter((c) => {
       const prog = progress[c._id || String(c.id)];
 
@@ -180,6 +193,29 @@ export default function LearnerDashboard() {
         {/* STATES */}
         {loading && <p>Loading courses...</p>}
         {error && <p className="text-red-500">{error}</p>}
+
+        {/* CATEGORIES */}
+<div className="mb-6">
+  <h2 className="text-sm text-gray-500 mb-2">categories</h2>
+
+  <div className="flex gap-6 flex-wrap">
+    {categories.map((cat) => (
+      <p
+        key={cat}
+        onClick={() => setSelectedCategory(cat)}
+        className={`cursor-pointer capitalize ${
+          selectedCategory === cat
+            ? "font-bold text-black"
+            : "text-gray-500"
+        }`}
+      >
+        {cat}
+      </p>
+    ))}
+  </div>
+</div>
+
+    <h2 className="text-lg font-semibold mb-4">Browse Courses</h2>
 
         {/* COURSE GRID */}
         {!loading && !error && (

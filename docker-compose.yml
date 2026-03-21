@@ -1,0 +1,59 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    container_name: lms-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - JWT_SECRET=supersecret
+      - PG_USER=postgres
+      - PG_PASSWORD=password
+      - PG_HOST=postgres
+      - PG_DB=lms
+      - MONGO_URI=mongodb://mongo:27017/lms
+    depends_on:
+      - postgres
+      - mongo
+    volumes:
+      - ./backend:/app
+    command: npm run dev
+
+  frontend:
+    build: ./frontend
+    container_name: lms-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+    command: npm run start
+
+  postgres:
+    image: postgres:15
+    container_name: lms-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: lms
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  mongo:
+    image: mongo:6
+    container_name: lms-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  postgres_data:
+  mongo_data:

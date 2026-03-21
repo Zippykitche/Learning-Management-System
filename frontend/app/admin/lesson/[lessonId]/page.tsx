@@ -31,7 +31,7 @@ export default function LessonPage() {
     const fetchLesson = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/lessons/lesson/${lessonId}`,
+          `http://localhost:5000/lessons/${lessonId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -59,7 +59,7 @@ export default function LessonPage() {
 
       if (isNew) {
         await axios.post(
-          "http://localhost:5000/lessons",
+          `http://localhost:5000/lessons`,
           {
             title,
             type,

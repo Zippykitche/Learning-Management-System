@@ -30,7 +30,7 @@ export default function ManageLessons() {
 
     const [courseRes, lessonsRes] = await Promise.all([
       axios.get(`http://localhost:5000/courses/${id}`, config),
-      axios.get(`http://localhost:5000/lessons/${id}`, config),
+      axios.get(`http://localhost:5000/lessons/courses/${id}/lessons`, config),
     ]);
 
     setCourse(courseRes.data);
