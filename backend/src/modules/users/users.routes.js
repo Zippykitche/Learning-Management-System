@@ -5,5 +5,6 @@ const role = require("./roleMiddleware");
 
 router.get("/me", auth, controller.getMe);
 router.get("/", auth, role("admin"), controller.getAllUsers);
+router.put("/update", auth, controller.updateUser);
 
 module.exports = router;

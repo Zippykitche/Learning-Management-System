@@ -10,7 +10,7 @@ exports.getAllLogs = async (req, res) => {
 
     // Fetch users from PostgreSQL
     const usersResult = await pool.query(
-      `SELECT id, name, email FROM users WHERE id = ANY($1)`,
+      `SELECT id, name, email FROM users WHERE id = ANY($1)  AND role = 'learner'`,
       [userIds]
     );
 
@@ -23,7 +23,7 @@ exports.getAllLogs = async (req, res) => {
     const enrichedLogs = logs.map(log => ({
       ...log._doc,
       user: usersMap[log.userId] || null,
-    }));
+    })).filter(log => log.user !== null);
 
     res.json(enrichedLogs);
 

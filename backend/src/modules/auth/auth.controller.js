@@ -39,5 +39,14 @@ exports.login = async (req, res) => {
 
    await logAction(user.id, "LOGIN", {email,});
 
-  res.json({ token });
+  res.json({
+  token,
+  user: {
+    id: user.id,
+    name: user.name,
+    role: user.role,
+    email: user.email
+  }
+});
+
 };
