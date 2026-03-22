@@ -14,6 +14,7 @@ export default function LessonPage() {
 
   const [lesson, setLesson] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const API = process.env.NEXT_PUBLIC_API_URL;
 
   const token =
     typeof window !== "undefined"
@@ -32,7 +33,7 @@ export default function LessonPage() {
   const fetchLesson = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/lessons/${lessonId}`,
+        `${API}/lessons/${lessonId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

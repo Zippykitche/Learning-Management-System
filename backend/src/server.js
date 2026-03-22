@@ -2,15 +2,13 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 
-
-const connectMongo = require("./config/mongo");
-const pool = require("./config/postgres");
-
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+const connectMongo = require("./config/mongo");
+const pool = require("./config/postgres");
 connectMongo();
 pool.connect()
   .then(() => console.log("PostgreSQL connected"))

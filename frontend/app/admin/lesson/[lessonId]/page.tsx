@@ -18,6 +18,7 @@ export default function LessonPage() {
   const [title, setTitle] = useState("");
   const [type, setType] = useState("");
   const [content, setContent] = useState("");
+  const API = process.env.NEXT_PUBLIC_API_URL;
 
   const token =
     typeof window !== "undefined"
@@ -31,7 +32,7 @@ export default function LessonPage() {
     const fetchLesson = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/lessons/${lessonId}`,
+          `${API}/lessons/${lessonId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -59,7 +60,7 @@ export default function LessonPage() {
 
       if (isNew) {
         await axios.post(
-          `http://localhost:5000/lessons`,
+          `${API}/lessons`,
           {
             title,
             type,
@@ -70,7 +71,7 @@ export default function LessonPage() {
         );
       } else {
         await axios.put(
-          `http://localhost:5000/lessons/${lessonId}`,
+          `${API}/lessons/${lessonId}`,
           { title, type, content },
           config
         );

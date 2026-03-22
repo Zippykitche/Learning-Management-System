@@ -13,6 +13,7 @@ export default function CourseDetail() {
   const [lessons, setLessons] = useState<any[]>([]);
   const [progress, setProgress] = useState<any>(null);
   const [updating, setUpdating] = useState<string | null>(null);
+  const API = process.env.NEXT_PUBLIC_API_URL;
 
   const token =
     typeof window !== "undefined"
@@ -31,9 +32,9 @@ export default function CourseDetail() {
     try {
       const config = { headers: { Authorization: `Bearer ${token}` } };
 
-      const courseRes = await axios.get(`http://localhost:5000/courses/${id}`, config).catch(e => { throw new Error(`Course fetch failed: ${e.response?.data?.message || e.message}`) });
-      const lessonsRes = await axios.get(`http://localhost:5000/lessons/courses/${id}/lessons`, config).catch(e => { throw new Error(`Lessons fetch failed: ${e.response?.data?.message || e.message}`) });
-      const progressRes = await axios.get(`http://localhost:5000/progress/${id}`, config).catch(e => { throw new Error(`Progress fetch failed: ${e.response?.data?.message || e.message}`) });
+      const courseRes = await axios.get(`${API}/courses/${id}`, config).catch(e => { throw new Error(`Course fetch failed: ${e.response?.data?.message || e.message}`) });
+      const lessonsRes = await axios.get(`${API}/lessons/courses/${id}/lessons`, config).catch(e => { throw new Error(`Lessons fetch failed: ${e.response?.data?.message || e.message}`) });
+      const progressRes = await axios.get(`${API}/progress/${id}`, config).catch(e => { throw new Error(`Progress fetch failed: ${e.response?.data?.message || e.message}`) });
 
       setCourse(courseRes.data);
       setLessons(lessonsRes.data);
@@ -53,7 +54,7 @@ export default function CourseDetail() {
       const courseIdParam = isNaN(Number(id)) ? id : Number(id);
 
       await axios.post(
-        "http://localhost:5000/progress/toggle",
+        "${API}/progress/toggle",
         { courseId: courseIdParam, lessonId },
         {
           headers: {

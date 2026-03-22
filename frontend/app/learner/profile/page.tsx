@@ -17,6 +17,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const API = process.env.NEXT_PUBLIC_API_URL;
 
   // ---------------- LOAD TOKEN ----------------
   useEffect(() => {
@@ -27,7 +28,7 @@ export default function ProfilePage() {
   // ---------------- FETCH USER ----------------
   const fetchUser = async (token: string) => {
     try {
-      const res = await axios.get("http://localhost:5000/users/me", {
+      const res = await axios.get(`${API}/users/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -58,7 +59,7 @@ export default function ProfilePage() {
 
     try {
       const res = await axios.put(
-        "http://localhost:5000/users/update",
+        `${API}/users/update`,
         { name, email },
         {
           headers: {

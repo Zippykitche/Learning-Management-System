@@ -25,6 +25,7 @@ export default function AdminDashboard() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const API = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     setToken(localStorage.getItem("token"));
@@ -32,7 +33,7 @@ export default function AdminDashboard() {
 
   const fetchCourses = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/courses", {
+      const res = await axios.get("${API}/courses", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCourses(res.data);
@@ -55,12 +56,12 @@ export default function AdminDashboard() {
     try {
       if (editingId) {
         await axios.put(
-          `http://localhost:5000/courses/${editingId}`,
+          `${API}/courses/${editingId}`,
           form,
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
-        await axios.post("http://localhost:5000/courses", form, {
+        await axios.post("${API}/courses", form, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }
@@ -77,7 +78,7 @@ export default function AdminDashboard() {
 
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:5000/courses/${id}`, {
+      await axios.delete(`${API}/courses/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchCourses();

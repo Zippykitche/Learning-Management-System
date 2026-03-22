@@ -1,4 +1,4 @@
-FROM node:18
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -8,8 +8,13 @@ RUN npm install
 
 COPY . .
 
+COPY .env.local .env.local
+
+RUN apk add --no-cache libc6-compat
+
 RUN npm run build
 
 EXPOSE 3000
 
 CMD ["npm", "start"]
+

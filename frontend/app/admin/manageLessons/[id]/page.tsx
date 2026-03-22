@@ -14,6 +14,7 @@ export default function ManageLessons() {
   const [formType, setFormType] = useState("");
   const [formContent, setFormContent] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const API = process.env.NEXT_PUBLIC_API_URL;
  
 
   const token =
@@ -29,8 +30,8 @@ export default function ManageLessons() {
     };
 
     const [courseRes, lessonsRes] = await Promise.all([
-      axios.get(`http://localhost:5000/courses/${id}`, config),
-      axios.get(`http://localhost:5000/lessons/courses/${id}/lessons`, config),
+      axios.get(`${API}/courses/${id}`, config),
+      axios.get(`${API}/lessons/courses/${id}/lessons`, config),
     ]);
 
     setCourse(courseRes.data);
@@ -57,7 +58,7 @@ export default function ManageLessons() {
 
     if (editingId) {
       await axios.put(
-        `http://localhost:5000/lessons/${editingId}`,
+        `${API}/lessons/${editingId}`,
         {
           title: formTitle,
           type: formType,
@@ -67,7 +68,7 @@ export default function ManageLessons() {
       );
     } else {
       await axios.post(
-        "http://localhost:5000/lessons",
+        `${API}/lessons`,
         {
           title: formTitle,
           type: formType,
@@ -94,7 +95,7 @@ export default function ManageLessons() {
   const handleDelete = async (lessonId: string) => {
     try {
       await axios.delete(
-        `http://localhost:5000/lessons/${lessonId}`,
+        `${API}/lessons/${lessonId}`,
         {
     headers: { Authorization: `Bearer ${token}` },
   }

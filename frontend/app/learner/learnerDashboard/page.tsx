@@ -9,6 +9,8 @@ type Course = {
   id: number;
   _id: string;
   title: string;
+  description: string;
+  category?: string;
 };
 
 type ProgressType = {
@@ -30,10 +32,17 @@ export default function LearnerDashboard() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const API = process.env.NEXT_PUBLIC_API_URL;
 
   const categories = [
   "all",
-  ...Array.from(new Set(courses.map((c) => c.category?.toLowerCase())))
+  ...Array.from(
+    new Set(
+      courses
+        .map((c) => c.category?.toLowerCase())
+        .filter((cat): cat is string => Boolean(cat)) 
+    )
+  )
 ];
 
   useEffect(() => {
@@ -46,7 +55,7 @@ export default function LearnerDashboard() {
   };
 
   const fetchUser = async (token: string) => {
-    const res = await axios.get("http://localhost:5000/users/me", {
+    const res = await axios.get("${API}/users/me", {
       headers: { Authorization: `Bearer ${token}` },
     });
     setUser(res.data.user || res.data);
@@ -56,7 +65,7 @@ export default function LearnerDashboard() {
     try {
       setLoading(true);
 
-      const res = await axios.get("http://localhost:5000/courses", {
+      const res = await axios.get("${API}/courses", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -65,7 +74,7 @@ export default function LearnerDashboard() {
 
       const progressRequests = res.data.map((course: Course) =>
         axios
-          .get(`http://localhost:5000/progress/${course._id || course.id}`, {
+          .get(`${API}/progress/${course._id || course.id}`, {
             headers: { Authorization: `Bearer ${token}` },
           })
           .catch((err) => {

@@ -8,6 +8,8 @@ export default function ActivityLogs() {
   const [logs, setLogs] = useState<any[]>([]);
   const router = useRouter();
 
+  const API = process.env.NEXT_PUBLIC_API_URL;
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     router.push("/");
@@ -18,7 +20,7 @@ export default function ActivityLogs() {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await axios.get("http://localhost:5000/audit", {
+        const res = await axios.get("${API}/audit", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
