@@ -55,7 +55,7 @@ export default function LearnerDashboard() {
   };
 
   const fetchUser = async (token: string) => {
-    const res = await axios.get("${API}/users/me", {
+    const res = await axios.get(`${API}/users/me`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     setUser(res.data.user || res.data);
@@ -65,7 +65,7 @@ export default function LearnerDashboard() {
     try {
       setLoading(true);
 
-      const res = await axios.get("${API}/courses", {
+      const res = await axios.get(`${API}/courses`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

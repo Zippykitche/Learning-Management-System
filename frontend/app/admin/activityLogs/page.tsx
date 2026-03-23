@@ -20,7 +20,7 @@ export default function ActivityLogs() {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await axios.get("${API}/audit", {
+        const res = await axios.get(`${API}/audit`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

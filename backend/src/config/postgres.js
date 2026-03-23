@@ -9,3 +9,15 @@ const pool = new Pool({
 });
 
 module.exports = pool;
+
+const connectWithRetry = async () => {
+  try {
+    await pool.query("SELECT NOW()");
+    console.log("PostgreSQL connected ✅");
+  } catch (err) {
+    console.log("Postgres not ready, retrying in 3s...");
+    setTimeout(connectWithRetry, 3000);
+  }
+};
+
+connectWithRetry();

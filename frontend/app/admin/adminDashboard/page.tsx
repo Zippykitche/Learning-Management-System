@@ -33,7 +33,7 @@ export default function AdminDashboard() {
 
   const fetchCourses = async () => {
     try {
-      const res = await axios.get("${API}/courses", {
+      const res = await axios.get(`${API}/courses`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCourses(res.data);
@@ -61,7 +61,7 @@ export default function AdminDashboard() {
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
-        await axios.post("${API}/courses", form, {
+        await axios.post(`${API}/courses`, form, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }

@@ -54,7 +54,7 @@ export default function CourseDetail() {
       const courseIdParam = isNaN(Number(id)) ? id : Number(id);
 
       await axios.post(
-        "${API}/progress/toggle",
+        `${API}/progress/toggle`,
         { courseId: courseIdParam, lessonId },
         {
           headers: {
