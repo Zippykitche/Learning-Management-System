@@ -131,6 +131,7 @@ export default function AuthPage() {
            {!isLogin && (
             <Input
               placeholder="Full name"
+              className="rounded-full bg-white"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
