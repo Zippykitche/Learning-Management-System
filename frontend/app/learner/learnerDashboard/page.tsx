@@ -241,19 +241,9 @@ export default function LearnerDashboard() {
                         {course.title}
                       </h3>
 
-                      {prog ? (
-                        <p className="text-sm text-gray-600">
-                          {prog.completed}/{prog.total} lessons completed
-                        </p>
-                      ) : (
-                        <p className="text-sm text-gray-600">
-                          Not started
-                        </p>
-                      )}
-
                       {/* BADGE */}
                       <span className="inline-block text-xs bg-[#efbab04e] px-2 py-1 rounded mt-2">
-                        {prog ? `${prog.completed}/${prog.total}` : "0 progress"}
+                        {prog ? `${prog.completed}/${prog.total}` : "0 progress"} Lessons Completed
                       </span>
                     </div>
 
