@@ -1,4 +1,4 @@
-services:   # ⚠️ THIS LINE IS REQUIRED
+services:   
 
   backend:
     build: ./backend
@@ -6,7 +6,9 @@ services:   # ⚠️ THIS LINE IS REQUIRED
     ports:
       - "5000:5000"
     env_file:
-      - .env
+      - ./backend/.env
+    environment:
+      PG_HOST: postgres
     depends_on:
       - postgres
       - mongo
@@ -31,7 +33,11 @@ services:   # ⚠️ THIS LINE IS REQUIRED
     container_name: lms-postgres
     restart: always
     env_file:
-      - .env
+      - ./backend/.env
+    environment:
+      POSTGRES_USER: zippy
+      POSTGRES_PASSWORD: zippy
+      POSTGRES_DB: Lms
     ports:
       - "5432:5432"
     volumes:
