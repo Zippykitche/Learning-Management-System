@@ -135,7 +135,7 @@ PG_DB=lms
 MONGO_URI=mongodb://mongo:27017/lms
 
 - Frontend (.env.local)
-NEXT_PUBLIC_API_URL=http://localhost:5000
+NEXT_PUBLIC_API_URL=https://learning-management-system-backend-ncxt.onrender.com
 
 # Docker Setup
 
