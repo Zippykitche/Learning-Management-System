@@ -41,10 +41,40 @@ pool.on("error", (err) => {
 
 module.exports = pool;
 
+const initDb = async () => {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        role VARCHAR(50) NOT NULL DEFAULT 'learner',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS courses (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT NOT NULL,
+        category VARCHAR(100) NOT NULL,
+        created_by INT REFERENCES users(id) ON DELETE SET NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log("Database tables verified/created successfully ✅");
+  } catch (err) {
+    console.error("Error creating database tables:", err.message);
+  }
+};
+
 const connectWithRetry = async () => {
   try {
     await pool.query("SELECT NOW()");
     console.log("PostgreSQL connected ✅");
+    await initDb();
   } catch (err) {
     console.error("Postgres connection error:", err.message);
     console.log("Postgres not ready, retrying in 5s...");
