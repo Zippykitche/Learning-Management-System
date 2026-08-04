@@ -4,49 +4,69 @@ const jwt = require("jsonwebtoken");
 const { logAction } = require("../../utils/auditLogger");
 
 exports.register = async (req, res) => {
-  const { name, email, password } = req.body;
+  try {
+    const { name, email, password } = req.body;
 
-  const hashed = await bcrypt.hash(password, 10);
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "Name, email, and password are required" });
+    }
 
-  const result = await pool.query(
-    "INSERT INTO users (name, email, password, role) VALUES ($1,$2,$3,$4) RETURNING *",
-    [name, email, hashed, "learner"]
-  );
+    const hashed = await bcrypt.hash(password, 10);
 
-  res.json(result.rows[0]);
+    const result = await pool.query(
+      "INSERT INTO users (name, email, password, role) VALUES ($1,$2,$3,$4) RETURNING *",
+      [name, email, hashed, "learner"]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error("Register Error:", err);
+    res.status(500).json({ message: err.message || "Registration failed" });
+  }
 };
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const result = await pool.query(
-    "SELECT * FROM users WHERE email=$1",
-    [email]
-  );
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
 
-  const user = result.rows[0];
+    const result = await pool.query(
+      "SELECT * FROM users WHERE email=$1",
+      [email]
+    );
 
-  if (!user) return res.status(400).send("User not found");
+    const user = result.rows[0];
 
-  const match = await bcrypt.compare(password, user.password);
+    if (!user) return res.status(400).json({ message: "User not found" });
 
-  if (!match) return res.status(400).send("Invalid password");
+    const match = await bcrypt.compare(password, user.password);
 
-  const token = jwt.sign(
-    { id: user.id, role: user.role },
-    process.env.JWT_SECRET
-  );
+    if (!match) return res.status(400).json({ message: "Invalid password" });
 
-   await logAction(user.id, "LOGIN", {email,});
+    const secret = process.env.JWT_SECRET || "lms_fallback_jwt_secret";
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      secret
+    );
 
-  res.json({
-  token,
-  user: {
-    id: user.id,
-    name: user.name,
-    role: user.role,
-    email: user.email
+    await logAction(user.id, "LOGIN", { email }).catch(err => {
+      console.error("Audit log failed:", err.message);
+    });
+
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        role: user.role,
+        email: user.email
+      }
+    });
+  } catch (err) {
+    console.error("Login Error:", err);
+    res.status(500).json({ message: err.message || "Login failed" });
   }
-});
-
 };
