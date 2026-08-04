@@ -1,4 +1,5 @@
 const { Pool } = require("pg");
+const bcrypt = require("bcrypt");
 require("dotenv").config();
 
 async function runMigration() {
@@ -51,7 +52,30 @@ async function runMigration() {
       );
     `);
 
-    console.log("✅ Database migration completed successfully!");
+    const adminEmail = process.env.ADMIN_EMAIL || "zipporah@gmail.com";
+    const adminPass = process.env.ADMIN_PASSWORD || "123456";
+    const adminName = process.env.ADMIN_NAME || "Zipporah";
+
+    console.log(`Seeding Admin User (${adminEmail})...`);
+    const userCheck = await pool.query("SELECT * FROM users WHERE email = $1", [adminEmail]);
+    if (userCheck.rows.length === 0) {
+      const hashedPassword = await bcrypt.hash(adminPass, 10);
+      await pool.query(
+        "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4)",
+        [adminName, adminEmail, hashedPassword, "admin"]
+      );
+      console.log(`Admin user (${adminEmail}) seeded successfully ✅`);
+    } else {
+      const user = userCheck.rows[0];
+      if (user.role !== "admin") {
+        await pool.query("UPDATE users SET role = 'admin' WHERE id = $1", [user.id]);
+        console.log(`Updated user (${adminEmail}) to admin role ✅`);
+      } else {
+        console.log(`Admin user (${adminEmail}) already exists ✅`);
+      }
+    }
+
+    console.log("✅ Database migration and seeding completed successfully!");
     await pool.end();
     process.exit(0);
   } catch (err) {

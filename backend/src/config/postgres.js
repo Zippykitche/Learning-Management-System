@@ -1,4 +1,5 @@
 const { Pool } = require("pg");
+const bcrypt = require("bcrypt");
 
 let connectionString = process.env.DATABASE_URL;
 let host = process.env.PG_HOST;
@@ -41,6 +42,32 @@ pool.on("error", (err) => {
 
 module.exports = pool;
 
+const seedAdmin = async () => {
+  try {
+    const adminEmail = process.env.ADMIN_EMAIL || "zipporah@gmail.com";
+    const adminPass = process.env.ADMIN_PASSWORD || "123456";
+    const adminName = process.env.ADMIN_NAME || "Zipporah";
+
+    const userCheck = await pool.query("SELECT * FROM users WHERE email = $1", [adminEmail]);
+    if (userCheck.rows.length === 0) {
+      const hashedPassword = await bcrypt.hash(adminPass, 10);
+      await pool.query(
+        "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4)",
+        [adminName, adminEmail, hashedPassword, "admin"]
+      );
+      console.log(`Admin user (${adminEmail}) seeded successfully ✅`);
+    } else {
+      const user = userCheck.rows[0];
+      if (user.role !== "admin") {
+        await pool.query("UPDATE users SET role = 'admin' WHERE id = $1", [user.id]);
+        console.log(`Updated user (${adminEmail}) to admin role ✅`);
+      }
+    }
+  } catch (err) {
+    console.error("Error seeding admin user:", err.message);
+  }
+};
+
 const initDb = async () => {
   try {
     await pool.query(`
@@ -65,6 +92,7 @@ const initDb = async () => {
       );
     `);
     console.log("Database tables verified/created successfully ✅");
+    await seedAdmin();
   } catch (err) {
     console.error("Error creating database tables:", err.message);
   }
